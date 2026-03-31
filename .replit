@@ -43,7 +43,7 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "go run main.go"
+args = "go run ."
 waitForPort = 8080
 
 [workflows.workflow.metadata]
