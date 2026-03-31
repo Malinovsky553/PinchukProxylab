@@ -48,3 +48,9 @@ waitForPort = 8080
 
 [workflows.workflow.metadata]
 outputType = "console"
+
+[userenv]
+
+[userenv.shared]
+TABLEKEY = "12345678"
+MAINKEY = "qwerty"
