@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Proxy Security Monitor</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background: #f4f6f8;
+			margin: 0;
+			padding: 30px;
+		}
+		.container {
+			max-width: 1100px;
+			margin: 0 auto;
+			background: white;
+			padding: 25px;
+			border-radius: 12px;
+			box-shadow: 0 0 12px rgba(0,0,0,0.08);
+		}
+		h1 {
+			margin-top: 0;
+			color: #1f2937;
+		}
+		.description {
+			background: #eef2ff;
+			padding: 15px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+			line-height: 1.5;
+		}
+		.nav {
+			margin-bottom: 20px;
+		}
+		.nav a {
+			margin-right: 12px;
+			color: #2563eb;
+			text-decoration: none;
+			font-weight: bold;
+		}
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 20px;
+		}
+		th, td {
+			border: 1px solid #d1d5db;
+			padding: 10px;
+			text-align: left;
+		}
+		th {
+			background: #1f2937;
+			color: white;
+		}
+		.allowed {
+			color: green;
+			font-weight: bold;
+		}
+		.blocked {
+			color: red;
+			font-weight: bold;
+		}
+		.commands {
+			background: #111827;
+			color: #f9fafb;
+			padding: 15px;
+			border-radius: 8px;
+			font-family: monospace;
+			white-space: pre-wrap;
+			margin-top: 20px;
+		}
+		.small-box {
+			background: #f9fafb;
+			border: 1px solid #d1d5db;
+			border-radius: 8px;
+			padding: 12px;
+			margin-top: 15px;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Веб-интерфейс мониторинга защитного контейнера</h1>
+
+		<div class="nav">
+			<a href="/dashboard">Обновить мониторинг</a>
+			{{if eq .Role "admin"}}
+				<a href="/admin">Панель администратора</a>
+			{{end}}
+			<a href="/logout">Выход</a>
+		</div>
+
+		<div class="description">
+			<b>Пользователь:</b> {{.Username}}<br>
+			<b>Роль:</b> {{.Role}}<br>
+			<b>Проект:</b> защита приложения от некорректного использования прозрачного прокси-сервера, активируемого через плагины браузера.<br>
+			<b>Реализованные функции:</b> проверка доверенного прокси и проверка временной метки X-Timestamp.<br>
+			<b>Допустимое отклонение timestamp:</b> 60 секунд.
+		</div>
+
+		<div class="small-box">
+			<b>Текущий список доверенных прокси:</b>
+			{{range .TrustedProxies}}
+				<span>{{.}}</span>
+			{{else}}
+				<span>список пуст</span>
+			{{end}}
+		</div>
+
+		<h2>История проверенных запросов</h2>
+
+		<table>
+			<tr>
+				<th>№</th>
+				<th>IP</th>
+				<th>Прокси-заголовки</th>
+				<th>Timestamp</th>
+				<th>Статус</th>
+				<th>Причина</th>
+			</tr>
+
+			{{range .Results}}
+			<tr>
+				<td>{{.Number}}</td>
+				<td>{{.IP}}</td>
+				<td>{{.Proxy}}</td>
+				<td>{{.TimeInfo}}</td>
+				<td class="{{.Status}}">{{.Status}}</td>
+				<td>{{.Reason}}</td>
+			</tr>
+			{{else}}
+			<tr>
+				<td colspan="6">Пока нет проверенных запросов. Отправьте запрос через Shell.</td>
+			</tr>
+			{{end}}
+		</table>
+
+		<h2>Команды для проверки защитного контейнера</h2>
+
+		<div class="commands">curl http://127.0.0.1:8080/health
+
+curl -i http://127.0.0.1:8080/api/check -H "X-Timestamp: $(date +%s)"
+
+curl -i http://127.0.0.1:8080/api/check
+
+curl -i http://127.0.0.1:8080/api/check -H "X-Timestamp: abc"
+
+curl -i http://127.0.0.1:8080/api/check -H "X-Timestamp: 1000"
+
+curl -i http://127.0.0.1:8080/api/check -H "X-Timestamp: $(date +%s)" -H "X-Forwarded-Proto: https"</div>
+	</div>
+</body>
+</html>

@@ -45,6 +45,16 @@ func addResult(ip string, hasForwardedHeaders bool, timestamp string, status str
   printResultsTable()
 }
 
+func getResults() []CheckResult {
+  resultsMu.Lock()
+  defer resultsMu.Unlock()
+
+  copyResults := make([]CheckResult, len(results))
+  copy(copyResults, results)
+
+  return copyResults
+}
+
 func printResultsTable() {
   fmt.Println()
   fmt.Println("-------------------------------------------------------------------------------------------")

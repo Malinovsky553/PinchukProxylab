@@ -1,0 +1,8 @@
+id,path,x_forwarded_proto,x_timestamp,expected_result,comment
+1,/,https,current,allowed,корректный запрос через sidecar
+2,/api/data,https,current,allowed,корректный запрос к legacy через sidecar
+3,/,,current,redirect,отсутствует признак https
+4,/api/data,https,,blocked,отсутствует timestamp
+5,/api/data,https,abc,blocked,неверный формат timestamp
+6,/api/data,https,1000,blocked,устаревший timestamp
+7,/api/data,https,current,blocked,недоверенный proxy

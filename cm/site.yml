@@ -1,0 +1,23 @@
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Create configuration directory
+      file:
+        path: "{{ project_root }}/cm/generated"
+        state: directory
+
+    - name: Generate security configuration
+      template:
+        src: "{{ project_root }}/cm/templates/security.env.j2"
+        dest: "{{ project_root }}/cm/generated/security.env"
+
+    - name: Generate legacy configuration
+      template:
+        src: "{{ project_root }}/cm/templates/legacy.env.j2"
+        dest: "{{ project_root }}/cm/generated/legacy.env"
+
+    - name: Generate sidecar configuration
+      template:
+        src: "{{ project_root }}/cm/templates/sidecar.env.j2"
+        dest: "{{ project_root }}/cm/generated/sidecar.env"
+        

@@ -1,19 +1,20 @@
-entrypoint = "main.go"
-run = ["go", "run", "."]
+entrypoint = "security/main.go"
+run = ["go", "run", "./security"]
 
 modules = ["go-1.21"]
 
 [env]
-GOPATH="$REPL_HOME/gopath"
+GOPATH = "$REPL_HOME/gopath"
 
 [nix]
 channel = "stable-24_05"
+packages = ["ansible"]
 
 [gitHubImport]
 requiredFiles = [".replit"]
 
 [deployment]
-build = "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -o main"
+build = "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main ./security"
 run = "./main"
 ignorePorts = false
 deploymentTarget = "gce"
@@ -43,14 +44,8 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "go run ."
+args = "go run ./security"
 waitForPort = 8080
 
 [workflows.workflow.metadata]
 outputType = "console"
-
-[userenv]
-
-[userenv.shared]
-TABLEKEY = "12345678"
-MAINKEY = "qwerty"

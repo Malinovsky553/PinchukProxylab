@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Панель администратора</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background: #f4f6f8;
+			margin: 0;
+			padding: 30px;
+		}
+		.container {
+			max-width: 850px;
+			margin: 0 auto;
+			background: white;
+			padding: 25px;
+			border-radius: 12px;
+			box-shadow: 0 0 12px rgba(0,0,0,0.08);
+		}
+		h1 {
+			margin-top: 0;
+			color: #1f2937;
+		}
+		.info {
+			background: #eef2ff;
+			padding: 15px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+			line-height: 1.5;
+		}
+		input {
+			padding: 10px;
+			width: 260px;
+			margin-right: 10px;
+		}
+		button {
+			padding: 10px 15px;
+			background: #1f2937;
+			color: white;
+			border: none;
+			cursor: pointer;
+		}
+		li {
+			margin-bottom: 8px;
+		}
+		a {
+			color: #2563eb;
+			font-weight: bold;
+			text-decoration: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Панель администратора защитного контейнера</h1>
+
+		<div class="info">
+			<b>Пользователь:</b> {{.Username}}<br>
+			<b>Роль:</b> {{.Role}}<br>
+			<b>Назначение:</b> управление списком доверенных прокси.
+		</div>
+
+		<h2>Текущий список доверенных прокси</h2>
+
+		<ul>
+			{{range .TrustedProxies}}
+				<li>{{.}}</li>
+			{{else}}
+				<li>Список пуст</li>
+			{{end}}
+		</ul>
+
+		<h2>Добавить доверенный прокси</h2>
+
+		<form method="POST" action="/admin/add-proxy">
+			<input type="text" name="ip" placeholder="Например: 127.0.0.1">
+			<button type="submit">Добавить</button>
+		</form>
+
+		<p>
+			<a href="/dashboard">Вернуться к мониторингу</a> |
+			<a href="/logout">Выход</a>
+		</p>
+	</div>
+</body>
+</html>
