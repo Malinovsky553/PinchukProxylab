@@ -1,51 +1,25 @@
+# Основной файл проекта
 entrypoint = "security/main.go"
-run = ["go", "run", "./security"]
 
+# Команда запуска проекта в Replit
+# Здесь запускаются main.go и table.go, потому что они оба входят в пакет main
+run = "go run security/main.go security/table.go"
+
+# Подключаем модуль Go
 modules = ["go-1.21"]
 
-[env]
-GOPATH = "$REPL_HOME/gopath"
-
+# Настройка отображения приложения в Preview
 [nix]
 channel = "stable-24_05"
-packages = ["ansible"]
 
-[gitHubImport]
-requiredFiles = [".replit"]
-
+# Дополнительные настройки интерфейса Replit
 [deployment]
-build = "CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o main ./security"
-run = "./main"
-ignorePorts = false
-deploymentTarget = "gce"
-
-[agent]
-expertMode = true
+run = ["sh", "-c", "go run security/main.go security/table.go"]
+deploymentTarget = "cloudrun"
 
 [[ports]]
 localPort = 8080
-externalPort = 8080
+externalPort = 80
 
-[workflows]
-runButton = "Project"
-
-[[workflows.workflow]]
-name = "Project"
-mode = "parallel"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Start application"
-
-[[workflows.workflow]]
-name = "Start application"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "go run ./security"
-waitForPort = 8080
-
-[workflows.workflow.metadata]
-outputType = "console"
+[agent]
+expertMode = true

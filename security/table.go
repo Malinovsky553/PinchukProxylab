@@ -5,6 +5,7 @@ import (
   "sync"
 )
 
+// Структура одной записи о проверке запроса
 type CheckResult struct {
   Number   int
   IP       string
@@ -14,24 +15,29 @@ type CheckResult struct {
   Reason   string
 }
 
+// Слайс для хранения результатов и mutex для безопасной работы с ними
 var (
   results   []CheckResult
   resultsMu sync.Mutex
 )
 
+// Добавление новой записи в историю проверок
 func addResult(ip string, hasForwardedHeaders bool, timestamp string, status string, reason string) {
   resultsMu.Lock()
   defer resultsMu.Unlock()
 
+  // Если есть прокси-заголовки, пишем yes, иначе no
   proxy := "no"
   if hasForwardedHeaders {
     proxy = "yes"
   }
 
+  // Если timestamp не передан, выводим missing
   if timestamp == "" {
     timestamp = "missing"
   }
 
+  // Формируем объект результата
   result := CheckResult{
     Number:   len(results) + 1,
     IP:       ip,
@@ -41,10 +47,14 @@ func addResult(ip string, hasForwardedHeaders bool, timestamp string, status str
     Reason:   reason,
   }
 
+  // Добавляем результат в общий список
   results = append(results, result)
+
+  // После добавления выводим таблицу в консоль
   printResultsTable()
 }
 
+// Получение копии списка результатов для веб-интерфейса
 func getResults() []CheckResult {
   resultsMu.Lock()
   defer resultsMu.Unlock()
@@ -55,6 +65,7 @@ func getResults() []CheckResult {
   return copyResults
 }
 
+// Вывод таблицы результатов в консоль Replit
 func printResultsTable() {
   fmt.Println()
   fmt.Println("-------------------------------------------------------------------------------------------")

@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Панель администратора</title>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 	<style>
 		body {
 			font-family: Arial, sans-serif;
@@ -11,7 +12,7 @@
 			padding: 30px;
 		}
 		.container {
-			max-width: 850px;
+			max-width: 1000px;
 			margin: 0 auto;
 			background: white;
 			padding: 25px;
@@ -21,6 +22,10 @@
 		h1 {
 			margin-top: 0;
 			color: #1f2937;
+		}
+		h2 {
+			color: #1f2937;
+			margin-top: 30px;
 		}
 		.info {
 			background: #eef2ff;
@@ -49,6 +54,16 @@
 			font-weight: bold;
 			text-decoration: none;
 		}
+		.chart-box {
+			background: #f9fafb;
+			border: 1px solid #d1d5db;
+			border-radius: 8px;
+			padding: 20px;
+			margin-top: 20px;
+		}
+		canvas {
+			margin-top: 15px;
+		}
 	</style>
 </head>
 <body>
@@ -58,7 +73,7 @@
 		<div class="info">
 			<b>Пользователь:</b> {{.Username}}<br>
 			<b>Роль:</b> {{.Role}}<br>
-			<b>Назначение:</b> управление списком доверенных прокси.
+			<b>Назначение:</b> управление списком доверенных прокси и просмотр аналитики.
 		</div>
 
 		<h2>Текущий список доверенных прокси</h2>
@@ -78,10 +93,77 @@
 			<button type="submit">Добавить</button>
 		</form>
 
+		<div class="chart-box">
+			<h2>Общая статистика запросов</h2>
+			<canvas id="statusChart"></canvas>
+		</div>
+
+		<div class="chart-box">
+			<h2>Причины блокировки</h2>
+			<canvas id="reasonChart"></canvas>
+		</div>
+
 		<p>
 			<a href="/dashboard">Вернуться к мониторингу</a> |
 			<a href="/logout">Выход</a>
 		</p>
 	</div>
+
+	<script>
+		const allowedCount = {{.AllowedCount}};
+		const blockedCount = {{.BlockedCount}};
+
+		const reasonLabels = [
+			"untrusted proxy",
+			"timestamp is missing",
+			"bad timestamp format",
+			"timestamp is too old or invalid"
+		];
+
+		const reasonData = [
+			{{index .Reasons "untrusted proxy"}},
+			{{index .Reasons "timestamp is missing"}},
+			{{index .Reasons "bad timestamp format"}},
+			{{index .Reasons "timestamp is too old or invalid"}}
+		];
+
+		new Chart(document.getElementById('statusChart'), {
+			type: 'bar',
+			data: {
+				labels: ['allowed', 'blocked'],
+				datasets: [{
+					label: 'Количество запросов',
+					data: [allowedCount, blockedCount]
+				}]
+			},
+			options: {
+				responsive: true,
+				plugins: {
+					legend: {
+						display: false
+					}
+				}
+			}
+		});
+
+		new Chart(document.getElementById('reasonChart'), {
+			type: 'bar',
+			data: {
+				labels: reasonLabels,
+				datasets: [{
+					label: 'Количество блокировок',
+					data: reasonData
+				}]
+			},
+			options: {
+				responsive: true,
+				plugins: {
+					legend: {
+						display: false
+					}
+				}
+			}
+		});
+	</script>
 </body>
 </html>
